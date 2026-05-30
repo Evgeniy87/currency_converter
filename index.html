@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0f1e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Currency">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230f0f1e' width='180' height='180'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='%238b5cf6' text-anchor='middle' dominant-baseline='middle' font-family='Arial'>¢</text></svg>">
     <title>Currency Converter</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Sohne:wght@400;600&display=swap');
@@ -20,7 +26,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
             color: #e0e0e0;
             overflow: hidden;
             position: relative;
@@ -494,6 +500,11 @@
 
         // Initial conversion
         convert();
+
+        // Register service worker for PWA support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript;base64,Y29uc3Qgc3RBSUQ9J2N1cnJlbmN5LXYxJzsKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywhZT0+c2VsZi5za2lwV2FpdGluZygpKTsKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdhY3RpdmF0ZSchZT0+c2VsZi5jbGllbnRzLmNsYWltKCkpOw==').catch(()=>{});
+        }
     </script>
 </body>
 </html>
