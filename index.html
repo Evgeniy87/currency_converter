@@ -138,6 +138,12 @@
         .result-rate {
             font-size: 14px;
             color: #9ca3af;
+            margin-bottom: 8px;
+        }
+
+        .last-updated {
+            font-size: 11px;
+            color: #6b7280;
         }
 
         .swap-btn {
@@ -163,6 +169,17 @@
             font-size: 13px;
             margin-top: 8px;
             display: none;
+        }
+
+        .loading {
+            color: #8b5cf6;
+            font-size: 13px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         @media (max-width: 375px) {
@@ -235,7 +252,8 @@
             <div class="result-box">
                 <div class="result-label">Converted Amount</div>
                 <div class="result-amount" id="result">0.00</div>
-                <div class="result-rate" id="rate">Loading...</div>
+                <div class="result-rate" id="rate"></div>
+                <div class="last-updated" id="updated"></div>
                 <div class="error" id="error"></div>
             </div>
 
@@ -291,21 +309,41 @@
         const toEl = document.getElementById('to');
         const resultEl = document.getElementById('result');
         const rateEl = document.getElementById('rate');
+        const updatedEl = document.getElementById('updated');
         const errorEl = document.getElementById('error');
         const swapBtn = document.getElementById('swap');
 
         let cache = {};
+        let lastFetchTime = null;
+
+        function formatTime(date) {
+            const hours = String(date.getHours()).padStart(2, '0');
+            const mins = String(date.getMinutes()).padStart(2, '0');
+            return `Updated: ${hours}:${mins}`;
+        }
 
         async function getRate(base) {
             if (cache[base]) return cache[base];
             try {
+                rateEl.innerHTML = '<span class="loading">Loading rates...</span>';
+                console.log('Fetching rates for:', base);
+                
                 const res = await fetch(`${API_URL}${base.toLowerCase()}.json`);
+                if (!res.ok) throw new Error('API error: ' + res.status);
+                
                 const data = await res.json();
+                console.log('Rates received:', data);
+                
                 cache[base] = data[base.toLowerCase()];
+                lastFetchTime = new Date();
+                updatedEl.textContent = formatTime(lastFetchTime);
+                
                 return cache[base];
             } catch (e) {
-                errorEl.textContent = 'Failed to load rates';
+                console.error('Fetch error:', e);
+                errorEl.textContent = 'Failed to load rates. Check internet connection.';
                 errorEl.style.display = 'block';
+                rateEl.textContent = '';
                 return null;
             }
         }
@@ -347,6 +385,8 @@
             convert();
         });
 
+        // Initial conversion
+        console.log('App started - fetching initial rates');
         convert();
     </script>
 </body>
